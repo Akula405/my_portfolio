@@ -7,7 +7,7 @@ export function Footer() {
       <div className="page-shell py-10">
         <div className="flex flex-col justify-between gap-8 sm:flex-row sm:items-end">
           <div>
-            <a href="#home" className="text-lg font-semibold tracking-tight text-zinc-950 dark:text-white">{portfolio.person.name}</a>
+            <a href="#home" className="font-signature text-3xl text-zinc-950 dark:text-white">{portfolio.person.displayName}</a>
             <p className="mt-2 text-sm text-zinc-500">Designed with care. Built with Next.js.</p>
           </div>
           <SocialLinks />

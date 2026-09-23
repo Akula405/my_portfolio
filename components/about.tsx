@@ -2,12 +2,12 @@ import { portfolio } from "@/data/portfolio";
 import { SectionHeading } from "@/components/section-heading";
 
 export function About() {
-  const { person, stats } = portfolio;
+  const { person } = portfolio;
 
   return (
     <section id="about" className="section-shell">
       <SectionHeading
-        eyebrow="01 / About"
+        eyebrow="About"
         title="Curious by nature. Precise by practice."
         intro="I care about the small details—the ones that make software feel obvious, fast, and quietly dependable."
       />
@@ -30,14 +30,6 @@ export function About() {
             <h3 className="mt-3 font-semibold text-zinc-950 dark:text-white">{portfolio.education.degree}</h3>
             <p className="mt-2 text-sm leading-6 text-zinc-600 dark:text-zinc-400">{portfolio.education.institution}</p>
             <p className="mt-1 text-xs text-zinc-500">{portfolio.education.detail}</p>
-          </div>
-          <div className="mt-10 grid grid-cols-3 gap-4 border-t border-zinc-200 pt-8 dark:border-zinc-800">
-            {stats.map((stat) => (
-              <div key={stat.label}>
-                <p className="text-3xl font-semibold tracking-tight text-zinc-950 dark:text-white sm:text-4xl">{stat.value}</p>
-                <p className="mt-2 text-xs uppercase tracking-wider text-zinc-500">{stat.label}</p>
-              </div>
-            ))}
           </div>
         </div>
       </div>

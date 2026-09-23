@@ -1,4 +1,6 @@
 import type { Metadata } from "next";
+import "@fontsource-variable/space-grotesk";
+import "@fontsource-variable/dancing-script";
 import "./globals.css";
 import { portfolio } from "@/data/portfolio";
 

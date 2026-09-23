@@ -7,7 +7,7 @@ function ThemeToggle() {
   function toggleTheme() {
     const nextDark = !document.documentElement.classList.contains("dark");
     document.documentElement.classList.toggle("dark", nextDark);
-    localStorage.setItem("theme", nextDark ? "dark" : "light");
+    try { localStorage.setItem("theme", nextDark ? "dark" : "light"); } catch { /* Theme still works when storage is unavailable. */ }
   }
 
   return (
@@ -40,8 +40,8 @@ export function Navbar() {
           <span className="grid h-9 w-9 place-items-center rounded-full bg-zinc-950 text-xs font-semibold text-white transition group-hover:bg-accent dark:bg-white dark:text-zinc-950 dark:group-hover:bg-accent dark:group-hover:text-white">
             {portfolio.person.initials}
           </span>
-          <span className="hidden text-sm font-semibold tracking-tight text-zinc-950 dark:text-white sm:block">
-            {portfolio.person.name}
+          <span className="font-signature hidden text-2xl text-zinc-950 dark:text-white sm:block">
+            {portfolio.person.displayName}
           </span>
         </a>
 
@@ -73,10 +73,10 @@ export function Navbar() {
 
       <div id="mobile-navigation" aria-hidden={!open} className={`overflow-hidden border-zinc-200 bg-paper transition-all duration-300 dark:border-zinc-800 dark:bg-[#0b0b0b] md:hidden ${open ? "max-h-96 border-t" : "max-h-0"}`}>
         <div className="page-shell flex flex-col py-5">
-          {portfolio.navigation.map((item, index) => (
-            <a key={item.href} href={item.href} tabIndex={open ? undefined : -1} onClick={() => setOpen(false)} className="flex items-center justify-between border-b border-zinc-200 py-3 text-sm font-medium dark:border-zinc-800">
+          {portfolio.navigation.map((item) => (
+            <a key={item.href} href={item.href} tabIndex={open ? undefined : -1} onClick={() => setOpen(false)} className="flex items-center justify-between border-b border-zinc-200 py-3 text-sm font-medium transition hover:pl-2 hover:text-accent dark:border-zinc-800">
               {item.label}
-              <span className="font-mono text-xs text-zinc-400">0{index + 1}</span>
+              <span aria-hidden="true" className="text-accent">↗</span>
             </a>
           ))}
         </div>

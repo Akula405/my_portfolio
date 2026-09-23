@@ -37,6 +37,40 @@ body {
   color: white;
 }
 
+.font-display, h2, h3 {
+  font-family: "Space Grotesk Variable", ui-sans-serif, system-ui, sans-serif;
+}
+
+.font-signature {
+  font-family: "Dancing Script Variable", cursive;
+  font-weight: 600;
+  letter-spacing: 0;
+}
+
+a, button, summary {
+  transition: color 200ms ease, background-color 200ms ease, border-color 200ms ease, transform 200ms ease, box-shadow 200ms ease;
+}
+
+a:focus-visible, button:focus-visible, summary:focus-visible, input:focus-visible, textarea:focus-visible {
+  outline: 2px solid #ff5c35;
+  outline-offset: 5px;
+}
+
+a:hover { color: #d64220; }
+.dark a:hover { color: #ff987e; }
+.social-link:hover, .button-primary:hover { color: white; }
+.social-link:hover { transform: translateY(-4px) rotate(-6deg); box-shadow: 0 8px 20px rgb(255 92 53 / 18%); }
+.project-link:hover svg, .button-primary:hover svg, .button-secondary:hover svg { transform: translateX(3px); }
+a svg, button svg { transition: transform 200ms ease; }
+button:not(:disabled):active, a:active { transform: translateY(1px); }
+button:disabled { cursor: wait; opacity: 0.65; }
+summary::-webkit-details-marker { display: none; }
+.experience-card[open] { border-color: #ff5c3566; }
+.experience-card[open] > div { animation: rise 200ms ease-out; }
+.ticker-track { animation: ticker 55s linear infinite; }
+.ticker-viewport:hover .ticker-track { animation-play-state: paused; }
+@keyframes ticker { to { transform: translateX(-50%); } }
+
 @layer components {
   .page-shell {
     @apply mx-auto w-full max-w-[1240px] px-5 sm:px-8 lg:px-10;
@@ -91,6 +125,9 @@ body {
 }
 
 @media (prefers-reduced-motion: reduce) {
+  .ticker-track { animation: none; width: 100%; }
+  .ticker-copy { flex-wrap: wrap; gap: 12px; }
+  .ticker-copy + .ticker-copy, .ticker-control { display: none; }
   html {
     scroll-behavior: auto;
   }

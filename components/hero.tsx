@@ -2,6 +2,7 @@ import { portfolio } from "@/data/portfolio";
 import { Icon } from "@/components/icons";
 import { SocialLinks } from "@/components/social-links";
 import Image from "next/image";
+import { SkillsTicker } from "@/components/skills-ticker";
 
 export function Hero() {
   const { person } = portfolio;
@@ -14,7 +15,6 @@ export function Hero() {
         <div className="max-w-5xl">
           <div className="animate-rise flex items-center gap-3">
             <span className="relative flex h-2.5 w-2.5">
-              <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-40" />
               <span className="relative inline-flex h-2.5 w-2.5 rounded-full bg-emerald-500" />
             </span>
             <p className="font-mono text-xs uppercase tracking-[0.2em] text-zinc-600 dark:text-zinc-400">
@@ -22,13 +22,11 @@ export function Hero() {
             </p>
           </div>
 
-          <div className="mt-8 grid items-center gap-10 sm:grid-cols-[1fr_0.7fr] lg:gap-20">
-          <h1 className="animate-rise text-[clamp(3.5rem,10vw,8.5rem)] font-semibold leading-[0.86] tracking-[-0.07em] text-zinc-950 [animation-delay:80ms] dark:text-white">
-            {person.name.split(" ")[0]}
-            <br />
-            <span className="text-zinc-400 dark:text-zinc-600">{person.name.split(" ").slice(1).join(" ")}.</span>
+          <div className="mt-8 grid items-center gap-10 lg:grid-cols-[1.5fr_0.7fr] lg:gap-20">
+          <h1 className="animate-rise font-signature text-[clamp(3.1rem,8vw,7rem)] leading-[1.2] text-zinc-950 [animation-delay:80ms] dark:text-white">
+            {person.displayName}
           </h1>
-          <div className="w-full max-w-[280px] animate-rise rounded-[2rem] border border-zinc-300 bg-white p-2 [animation-delay:160ms] dark:border-zinc-700 dark:bg-zinc-900 sm:justify-self-end lg:max-w-[320px]">
+          <div className="w-full max-w-[280px] animate-rise rounded-[2rem] border border-zinc-300 bg-white p-2 [animation-delay:160ms] dark:border-zinc-700 dark:bg-zinc-900 lg:justify-self-end lg:max-w-[320px]">
             <Image src={person.imageUrl} alt={person.imageAlt} width={480} height={560} priority className="aspect-[6/7] w-full rounded-[1.5rem] object-cover" />
           </div>
           </div>
@@ -53,7 +51,8 @@ export function Hero() {
           </div>
         </div>
 
-        <div className="mt-16 flex animate-rise flex-wrap items-center justify-between gap-6 border-t border-zinc-200 pt-6 [animation-delay:240ms] dark:border-zinc-800">
+        <SkillsTicker />
+        <div className="mt-8 flex animate-rise flex-wrap items-center justify-between gap-6 border-t border-zinc-200 pt-6 [animation-delay:240ms] dark:border-zinc-800">
           <SocialLinks />
           <p className="text-sm text-zinc-500">{person.location}</p>
         </div>

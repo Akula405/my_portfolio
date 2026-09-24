@@ -27,27 +27,20 @@ The displayed name is `person.displayName` (currently `Satish Akula`), styled wi
 
 ## Contact email setup
 
-The form posts to `/api/contact`, which sends through [Resend](https://resend.com/docs/api-reference/emails/send-email). API credentials are only read on the server.
+The existing React client form uses `@formspree/react` with form ID `mgavygep` and submits to `https://formspree.io/f/mgavygep`. No API keys, Resend configuration, or custom backend are required. The form ID is public by design.
 
-1. Copy `.env.example` to `.env.local`.
-2. Set `RESEND_API_KEY` to your Resend sending key.
-3. Set `CONTACT_FROM_EMAIL` to a sender on your verified Resend domain, such as `Satish Portfolio <contact@your-domain.com>`.
-4. Keep `CONTACT_TO_EMAIL=akulasatish405@gmail.com`, or set another inbox.
-5. Restart the development server. For deployment, set the same variables in your hosting environment and redeploy.
+Manage the recipient inbox, allowed domains, spam protection, and notification settings in your Formspree dashboard. Confirm the recipient email there and check that your deployed domain is allowed if you enable domain restrictions. Changing `person.email` only changes the direct email link; it does not change Formspree's configured recipient.
 
-Never prefix these secrets with `NEXT_PUBLIC_` or commit `.env.local`. The Resend test sender can only deliver within your account's testing restrictions; use a verified sender for production.
+The form sends Name, Email, and Message, plus Formspree's hidden `_gotcha` honeypot field. It retains native required-field and email validation, accessible provider validation feedback, a disabled loading button, and the existing toast styling. Success appears only after Formspree accepts the submission and resets the fields. Failed submissions keep the message for retry and offer a direct email link. The standard POST action also provides a no-JavaScript fallback.
 
-The form shows a dismissible success toast after Resend accepts the message. Missing configuration, validation failures, provider rejections, and network failures show a friendly email-fallback toast without clearing the visitor's message or claiming it was sent. Success notifications close after eight seconds; fallback notifications remain until dismissed. Reply-To is set to the visitor's address; the recipient is controlled by the server. Resend acceptance does not confirm inbox delivery.
+Reference: [Formspree React integration](https://github.com/formspree/formspree-js/tree/master/packages/formspree-react).
 
-The endpoint includes input and body-size limits, an origin check, and a honeypot. Configure hosting-level rate limiting or bot protection before public deployment; these checks alone are not a distributed rate limiter.
-
-Run `npm run test:contact` to verify validation, payload construction, configuration handling, and provider/network failures using a mock provider. These tests do not send emails. A real delivery test requires your configured Resend credentials.
+To check end-to-end delivery, submit a message through the site and confirm it in both the Formspree submissions dashboard and your recipient inbox. Build and lint checks do not verify external email delivery.
 
 ## Commands
 
 ```bash
 npm run dev
 npm run lint
-npm run test:contact
 npm run build
 ```

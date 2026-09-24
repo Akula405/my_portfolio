@@ -1,41 +1,40 @@
 "use client";
 
-import { FormEvent, useEffect, useState } from "react";
+import { FormEvent, useEffect, useRef, useState } from "react";
+import { useForm, ValidationError } from "@formspree/react";
 import { portfolio } from "@/data/portfolio";
 import { Icon } from "@/components/icons";
 
 export function Contact() {
-  const [status, setStatus] = useState<"idle" | "loading">("idle");
-  const [toast, setToast] = useState<"sent" | "email" | null>(null);
+  const [state, submitToFormspree, resetFormspree] = useForm("mgavygep");
+  const formRef = useRef<HTMLFormElement>(null);
+  const sendingRef = useRef(false);
+  const [dismissed, setDismissed] = useState(false);
+  const [networkError, setNetworkError] = useState(false);
+  const toast = dismissed ? null : state.succeeded ? "sent" : state.errors || networkError ? "email" : null;
 
   useEffect(() => {
-    if (toast !== "sent") return;
-    const timer = setTimeout(() => setToast(null), 8000);
+    if (!state.succeeded) return;
+    formRef.current?.reset();
+    const timer = setTimeout(() => setDismissed(true), 8000);
     return () => clearTimeout(timer);
-  }, [toast]);
+  }, [state.succeeded]);
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    if (status === "loading") return;
-    const form = event.currentTarget;
-    const data = new FormData(form);
-    setStatus("loading");
-    setToast(null);
+    if (sendingRef.current) return;
+    const data = new FormData(event.currentTarget);
+    sendingRef.current = true;
+    resetFormspree();
+    setDismissed(false);
+    setNetworkError(false);
     try {
-      const response = await fetch("/api/contact", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(Object.fromEntries(data.entries())),
-        signal: AbortSignal.timeout(20000),
-      });
-      const result = await response.json();
-      if (!response.ok || !result.success) throw new Error(result.error || "Your message could not be sent. Please try again.");
-      setToast("sent");
-      form.reset();
+      await submitToFormspree(data);
     } catch {
-      setToast("email");
+      resetFormspree();
+      setNetworkError(true);
     } finally {
-      setStatus("idle");
+      sendingRef.current = false;
     }
   }
 
@@ -58,32 +57,35 @@ export function Contact() {
           </div>
         </div>
 
-        <form onSubmit={handleSubmit} aria-busy={status === "loading"} className="rounded-2xl border border-zinc-200 bg-white p-6 shadow-soft dark:border-zinc-800 dark:bg-zinc-950 sm:p-8">
+        <form ref={formRef} action="https://formspree.io/f/mgavygep" method="POST" onSubmit={handleSubmit} aria-busy={state.submitting} className="rounded-2xl border border-zinc-200 bg-white p-6 shadow-soft dark:border-zinc-800 dark:bg-zinc-950 sm:p-8">
           <div className="hidden" aria-hidden="true">
-            <label>Website<input name="website" type="text" tabIndex={-1} autoComplete="off" /></label>
+            <label>Leave this empty<input name="_gotcha" type="text" tabIndex={-1} autoComplete="off" /></label>
           </div>
-          <fieldset disabled={status === "loading"}>
+          <fieldset disabled={state.submitting}>
           <legend className="sr-only">Send me a message</legend>
           <div className="grid gap-6 sm:grid-cols-2">
             <label className="form-label">
               Name
-              <input name="name" type="text" autoComplete="name" maxLength={100} className="form-input" placeholder="Your name" required />
+              <input name="name" type="text" autoComplete="name" maxLength={100} className="form-input" placeholder="Your name" required aria-invalid={Boolean(state.errors?.getFieldErrors("name").length)} aria-describedby="contact-name-error" />
+              <ValidationError id="contact-name-error" field="name" prefix="Name" errors={state.errors} className="mt-2 text-xs font-normal normal-case tracking-normal text-red-700 dark:text-red-300" />
             </label>
             <label className="form-label">
               Email
-              <input name="email" type="email" autoComplete="email" maxLength={254} className="form-input" placeholder="you@example.com" required />
+              <input name="email" type="email" autoComplete="email" maxLength={254} className="form-input" placeholder="you@example.com" required aria-invalid={Boolean(state.errors?.getFieldErrors("email").length)} aria-describedby="contact-email-error" />
+              <ValidationError id="contact-email-error" field="email" prefix="Email" errors={state.errors} className="mt-2 text-xs font-normal normal-case tracking-normal text-red-700 dark:text-red-300" />
             </label>
           </div>
           <label className="form-label mt-6">
             Message
-            <textarea name="message" maxLength={5000} className="form-input min-h-32 resize-y" placeholder="Your message..." required />
+            <textarea name="message" maxLength={5000} className="form-input min-h-32 resize-y" placeholder="Your message..." required aria-invalid={Boolean(state.errors?.getFieldErrors("message").length)} aria-describedby="contact-message-error" />
+            <ValidationError id="contact-message-error" field="message" prefix="Message" errors={state.errors} className="mt-2 text-xs font-normal normal-case tracking-normal text-red-700 dark:text-red-300" />
           </label>
           <div className="mt-7 flex flex-wrap items-center justify-between gap-4">
-            <button type="submit" disabled={status === "loading"} className="button-primary">{status === "loading" ? "Sending…" : "Send message"} <Icon name="arrow" className="h-4 w-4" /></button>
+            <button type="submit" disabled={state.submitting} className="button-primary">{state.submitting ? "Sending…" : "Send message"} <Icon name="arrow" className="h-4 w-4" /></button>
           </div>
           </fieldset>
           <p className="sr-only" role="status" aria-live="polite">
-            {status === "loading" ? "Sending your message…" : ""}
+            {state.submitting ? "Sending your message…" : ""}
           </p>
         </form>
       </div>
@@ -97,8 +99,9 @@ export function Contact() {
               <p className="font-semibold text-zinc-950 dark:text-white">{toast === "sent" ? "Message sent successfully!" : "Thanks for reaching out!"}</p>
               <p className="mt-1 text-sm leading-6 text-zinc-600 dark:text-zinc-400">{toast === "sent" ? "Thank you for your message. I’m glad we could connect." : "Your message hasn’t been sent yet. You can email me directly, or try again."}</p>
               {toast === "email" && <a href={`mailto:${portfolio.person.email}`} className="mt-2 inline-block text-sm font-semibold text-emerald-700 underline underline-offset-4 dark:text-emerald-300">Email me directly</a>}
+              {toast === "email" && <ValidationError errors={state.errors} className="mt-2 text-sm leading-6 text-zinc-600 dark:text-zinc-400" />}
             </div>
-            <button type="button" onClick={() => setToast(null)} aria-label="Dismiss notification" className="grid h-8 w-8 shrink-0 place-items-center rounded-full text-zinc-500 hover:bg-zinc-100 dark:hover:bg-zinc-800"><svg aria-hidden="true" className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><path d="m6 6 12 12M6 18 18 6" /></svg></button>
+            <button type="button" onClick={() => setDismissed(true)} aria-label="Dismiss notification" className="grid h-8 w-8 shrink-0 place-items-center rounded-full text-zinc-500 hover:bg-zinc-100 dark:hover:bg-zinc-800"><svg aria-hidden="true" className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><path d="m6 6 12 12M6 18 18 6" /></svg></button>
           </div>
         )}
       </div>

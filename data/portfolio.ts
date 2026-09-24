@@ -12,7 +12,7 @@ export const portfolio = {
     intro: "I turn ideas into intuitive interfaces, connecting thoughtful frontend design with dependable APIs and practical AI experiences.",
     about: "I’m a frontend-focused full-stack developer who cares as much about how a product feels as how it works. I bring together React, Next.js, and modern web technologies to build clear, responsive experiences backed by thoughtful application logic.",
     aboutMore: "My approach starts with the person using the product: simplify the journey, make interactions feel natural, and keep the code easy to evolve. Alongside frontend engineering, I’m building my backend and Python toolkit and exploring how retrieval, language models, and AI-assisted workflows can make everyday software more useful.",
-    availability: "React · Vue · AI-assisted development",
+    availability: "Frontend · Fullstack · AI-assisted development",
     resumeUrl: "/satish_resume_UI.pdf",
     imageUrl: "/profile-placeholder.svg",
     imageAlt: "Profile photo placeholder",
